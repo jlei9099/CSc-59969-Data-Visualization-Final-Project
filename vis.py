@@ -1,43 +1,26 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-
+import plotly.graph_objs as go
 import pandas as pd
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+df = pd.read_csv('https://raw.githubusercontent.com/jlei9099/CSc-59969-Data-Visualization-Final-Project/master/COVID-19%20Data%20Set%20-%20Sheet.csv')
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+pv = pd.pivot_table(df, index=['Country'], values=['Total Cases'], aggfunc=sum, fill_value=0)
+trace1 = go.Bar(x=pv.index, y=pv[('Total Cases', 'Total Deaths')], name='Total Deaths')
+trace2 = go.Bar(x=pv.index, y=pv[('Total Cases', 'Total Recovered')], name='Total Recovered')
 
-df = pd.read_csv('https://gist.githubusercontent.com/chriddyp/5d1ea79569ed194d432e56108a04d188/raw/a9f9e8076b837d541398e999dcbac2b2826a81f8/gdp-life-exp-2007.csv')
+app = dash.Dash()
 
-
-app.layout = html.Div([
+app.layout = html.Div(children=[
+    html.H1(children='COVID-19'),
     dcc.Graph(
-        id='life-exp-vs-gdp',
+        id='graph',
         figure={
-            'data': [
-                dict(
-                    x=df[df['continent'] == i]['gdp per capita'],
-                    y=df[df['continent'] == i]['life expectancy'],
-                    text=df[df['continent'] == i]['country'],
-                    mode='markers',
-                    opacity=0.7,
-                    marker={
-                        'size': 15,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    },
-                    name=i
-                ) for i in df.continent.unique()
-            ],
-            'layout': dict(
-                xaxis={'type': 'log', 'title': 'GDP Per Capita'},
-                yaxis={'title': 'Life Expectancy'},
-                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
-                legend={'x': 0, 'y': 1},
-                hovermode='closest'
-            )
-        }
-    )
+            'data': [trace1, trace2],
+            'layout':
+            go.Layout(title='Recoveries vs. Deaths', barmode='stack')
+        })
 ])
 
 if __name__ == '__main__':

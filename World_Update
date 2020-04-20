@@ -15,39 +15,92 @@ df = pd.read_csv('https://data.humdata.org/hxlproxy/api/data-preview.csv?url=htt
 # df.drop(df.columns[[0,2,3]],axis=1, inplace=True)
 
 df = df.rename(columns= {"Country/Region" : "Country", "Province/State": "Province"})
-
-total_list = df.groupby('Country')['4/13/20'].sum().tolist()
-
+arr=[]
+# df.columns[date]
+for date in range(4,len(df.columns)):
+    total_list = df.groupby('Country')[df.columns[date]].sum().tolist()
+    arr.append(total_list)
+#print(total_list)
+# print(df.columns[4:])
 country_list = df["Country"].tolist()
 country_set = set(country_list)
 country_list = list(country_set)
 country_list.sort()
+arr1=[]
+repeat_dates=[]
+for x in range(len(arr)):
+    arr1.append(list(zip(country_list, arr[x])))
 
-new_df = pd.DataFrame(list(zip(country_list, total_list)), 
-               columns =['Country', 'Total_Cases'])
+for i in range(4,len(df.columns)):
+    for x in range(len(arr1[0])):
+        repeat_dates.append(df.columns[i])
+
+data=[]
+
+for i in range(len(arr1)):
+    for x in range(len(arr1[i])):
+        data.append(arr1[i][x])
+
+for i in range(len(data)):
+    date= (repeat_dates[i],)
+    update= data[i] + date
+    data[i]=update
+
+# print(arr1)
+# new_df = pd.DataFrame(list(zip(country_list, total_list)), 
+#                columns =['Country', 'Total_Cases'])
+
+new_df = pd.DataFrame(data, 
+               columns =['Country', 'Total_Cases','Date'])
+
+# print(new_df)
+# print(arr1[0])
+# print(arr1[1][0][1])
+# print(repeat_dates)
+# print(len(arr1[0]))
+# print(arr1[0][0])
+# print(data[0])
+df_countrydate= new_df.groupby(['Country','Date']).sum().reset_index()
+
 
 colors = ["#F9F9F5", "#FAFAE6", "#FCFCCB", "#FCFCAE",  "#FCF1AE", "#FCEA7D", "#FCD97D",
           "#FCCE7D", "#FCC07D", "#FEB562", "#F9A648",  "#F98E48", "#FD8739", "#FE7519",
           "#FE5E19", "#FA520A", "#FA2B0A", "#9B1803",  "#861604", "#651104", "#570303",]
 
 
-fig = go.Figure(data=go.Choropleth(
-    locationmode = "country names",
-    locations = new_df['Country'],
-    z = new_df['Total_Cases'],
-    text = new_df['Total_Cases'],
-    colorscale = colors,
-    autocolorscale=False,
-    reversescale=False,
-    colorbar_title = 'Reported Covid-19 Cases',
-))
+# fig = go.Figure(data=go.Choropleth(
+#     locationmode = "country names",
+#     locations = new_df['Country'],
+#     z = new_df['Total_Cases'],
+#     text = new_df['Total_Cases'],
+#     colorscale = colors,
+#     autocolorscale=False,
+#     reversescale=False,
+#     colorbar_title = 'Reported Covid-19 Cases',
+#     animation_frame="Date"
+# ))
 
+# fig.update_layout(
+#     title_text='Reported Covid-19 Cases',
+#     geo=dict(
+#         showcoastlines=True,
+#     ),
+# )
+
+fig = px.choropleth(df_countrydate, 
+                    locations="Country", 
+                    locationmode = "country names",
+                    color="Total_Cases", 
+                    hover_name="Country", 
+                    animation_frame="Date"
+                   )
 fig.update_layout(
-    title_text='Reported Covid-19 Cases',
+    title_text = 'Global Spread of Coronavirus',
+    title_x = 0.5,
     geo=dict(
-        showcoastlines=True,
-    ),
-)
+        showframe = False,
+        showcoastlines = False,
+    ))
 
 app = dash.Dash()
 app.layout = html.Div([

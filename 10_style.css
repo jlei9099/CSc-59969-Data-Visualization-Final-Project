@@ -1,0 +1,18 @@
+.map .dash-graph{
+    width:50%;
+    height: 550px;
+    display: inline-block;
+    background-color: cornsilk;
+}
+.map{
+    text-align: center; 
+}
+
+/* .map rect{
+    width: 200px;
+    height: 200px;
+} */
+
+body{
+    background-color: cornsilk;
+}

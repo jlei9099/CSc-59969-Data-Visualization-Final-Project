@@ -129,10 +129,11 @@ app.layout = html.Div([
         html.Div([
             dcc.Graph(id='graph2', figure=fig_recover),
             dcc.Graph(id='graph3', figure=fig_death),
+            dcc.Graph(id='graph1', figure=fig_total),
         ])
     ],className="map"),
     html.Div([
-        dcc.Graph(id='graph1', figure=fig_total),
+       
     ]),
     html.Div([
         html.H1("Compare Curves")

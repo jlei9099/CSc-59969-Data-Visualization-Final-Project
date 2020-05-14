@@ -7,7 +7,7 @@ https://data.humdata.org/dataset/novel-coronavirus-2019-ncov-cases
 
 
 ### To start: 
-* Download the project folder and run the vis python file within it.
+* Download the Updated project folder and run the vis python file within it.
 
 ### Dependinces:
 - pandas
